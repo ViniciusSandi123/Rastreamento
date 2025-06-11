@@ -1,0 +1,38 @@
+services:
+  app:
+    build:
+      context: ./Backend
+      dockerfile: Dockerfile
+    container_name: laravel_app
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./Backend:/var/www
+    depends_on:
+      - db
+
+  frontend:
+    build:
+      context: ./Frontend
+      dockerfile: Dockerfile
+    container_name: vue_app
+    ports:
+      - "5173:5173"
+    working_dir: /app
+    command: ["npm", "run", "dev", "--", "--host"]
+    depends_on:
+      - app
+
+  db:
+    image: mysql:8.0
+    container_name: mysql_db
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_DATABASE: rastreamento
+      MYSQL_ROOT_PASSWORD: 1234
+    volumes:
+      - dbdata:/var/lib/mysql
+
+volumes:
+  dbdata:
